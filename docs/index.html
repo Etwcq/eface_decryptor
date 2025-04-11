@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>eFace Decryptor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        textarea, input {
+            width: 100%;
+            margin-top: 10px;
+        }
+        textarea {
+            height: 100px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>eFace Decryptor</h1>
+        <input id="phrase" type="text" placeholder="鍵（launch_ha_key）を入力" />
+        <textarea id="inputText" placeholder="暗号文をここに貼り付け"></textarea>
+        <button onclick="decodeText()">デコード</button>
+        <div id="output" class="output"></div>
+    </div>
+
+    <script>
+        function setCharDecrypt(e,t){let r="";for(let $=0,o=0,f=t.length;$<f;++$){let n=t.charCodeAt($),l=15&e.charCodeAt(o%e.length);o++,127==(n^=l)&&(n^=l),r+=String.fromCharCode(n)}return r}function decodeBase64(e){try{return atob(e)}catch(t){return console.error(t),""}}function utf8ArrayToString(e){let t="",r=0;for(;r<e.length;){let $=e[r++];if($<128)t+=String.fromCharCode($);else if($>191&&$<224)t+=String.fromCharCode((31&$)<<6|63&e[r++]);else if($>223&&$<240){let o;t+=String.fromCharCode((15&$)<<12|(63&e[r++])<<6|63&e[r++])}else if($>239&&$<248){let f=e[r++],n;t+=String.fromCodePoint((7&$)<<18|(63&f)<<12|(63&e[r++])<<6|63&e[r++])}}return t}function stringToUtf8Array(e){let t=[];for(let r=0;r<e.length;r++){let $=e.charCodeAt(r);$<128?t.push($):$<2048?t.push(192|$>>6,128|63&$):$<55296||$>=57344?t.push(224|$>>12,128|$>>6&63,128|63&$):(r++,$=65536+((1023&$)<<10|1023&e.charCodeAt(r)),t.push(240|$>>18,128|$>>12&63,128|$>>6&63,128|63&$))}return t}function decodeText(){let e=document.getElementById("inputText").value,t=document.getElementById("phrase").value;try{let r=e.trim();r=unescape(r),r=setCharDecrypt(t,r);try{r=decodeURIComponent(r)}catch($){console.warn($)}if(r=decodeBase64(r)){let o=[];for(let f=0;f<r.length;f++)o.push(r.charCodeAt(f));r=utf8ArrayToString(o)}document.getElementById("output").textContent=r}catch(n){console.error(n),document.getElementById("output").textContent="エラー: "+n.message}}
+    </script>
+</body>
+</html>
